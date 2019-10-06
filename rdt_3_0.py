@@ -1,4 +1,4 @@
-import network_3_0
+import network_3_0 as Network
 import argparse
 from time import sleep
 import hashlib

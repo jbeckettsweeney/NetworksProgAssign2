@@ -3,7 +3,7 @@ import socket
 import threading
 from time import sleep
 import random
-import rdt_3_0
+import rdt_3_0 as RDT
 
 
 ## Provides an abstraction for the network layer
