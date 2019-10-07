@@ -1,6 +1,7 @@
 import argparse
 import rdt_2_1 as RDT
 import time
+import network_2_1 as net
 
 
 def makePigLatin(word):
@@ -37,7 +38,11 @@ if __name__ == '__main__':
     rdt = RDT.RDT('server', None, args.port)
     while (True):
         # try to receiver message before timeout
-        msg_S = rdt.rdt_1_0_receive()
+        ack_msg,msg_S = rdt.rdt_2_1_receive()
+        #takes in the acknowledgement or not acknowledgment and sends out the appropriate packet
+        if(ack_msg!='ACK'):
+            rdt.rdt_2_1_send(rdt.get_ori_message())
+        
         if msg_S is None:
             if time_of_last_data + timeout < time.time():
                 break
@@ -48,6 +53,6 @@ if __name__ == '__main__':
         # convert and reply
         rep_msg_S = piglatinize(msg_S)
         print('Converted %s \nto \n%s\n' % (msg_S, rep_msg_S))
-        rdt.rdt_1_0_send(rep_msg_S)
+        rdt.rdt_2_1_send(rep_msg_S)
 
     rdt.disconnect()

@@ -80,7 +80,7 @@ class NetworkLayer:
             if sent == 0:
                 raise RuntimeError("socket connection broken")
             totalsent = totalsent + sent
-
+            
     ## Receive data from the network and save in internal buffer
     def collect(self):
         #         print (threading.currentThread().getName() + ': Starting')
