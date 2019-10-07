@@ -42,6 +42,8 @@ if __name__ == '__main__':
         #takes in the acknowledgement or not acknowledgment and sends out the appropriate packet
         if(ack_msg!='ACK'):
             rdt.rdt_2_1_send(rdt.get_ori_message())
+        else:
+            break
         
         if msg_S is None:
             if time_of_last_data + timeout < time.time():
