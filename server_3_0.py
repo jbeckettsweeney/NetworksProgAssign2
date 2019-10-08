@@ -37,17 +37,34 @@ if __name__ == '__main__':
     rdt = RDT.RDT('server', None, args.port)
     while (True):
         # try to receiver message before timeout
-        msg_S = rdt.rdt_1_0_receive()
+        msg_S = rdt.rdt_3_0_receive()
         if msg_S is None:
             if time_of_last_data + timeout < time.time():
                 break
             else:
                 continue
         time_of_last_data = time.time()
-
+        print()
+        print("received: ", msg_S)
+        print()
         # convert and reply
-        rep_msg_S = piglatinize(msg_S)
-        print('Converted %s \nto \n%s\n' % (msg_S, rep_msg_S))
-        rdt.rdt_1_0_send(rep_msg_S)
+        if msg_S[:3] == "NAK":
+            rep_msg_S = "NAK"
+            print()
+            print("received corrupt packet")
+            print()
+            print("reply set to: ", rep_msg_S)
+            print()
+            rdt.rdt_3_0_send(rep_msg_S)
+        else:
+            rep_msg_S = piglatinize(msg_S)
+            rep_msg_S = "ACK " + rep_msg_S
+            print()
+            print("no corrupt packet")
+            print()
+            print("reply set to: ", rep_msg_S)
+            print()
+            #print('Converted %s \nto \n%s\n' % (msg_S, rep_msg_S))
+            rdt.rdt_3_0_send(rep_msg_S)
 
     rdt.disconnect()
