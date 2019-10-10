@@ -10,7 +10,7 @@ import rdt_2_1 as RDT
 class NetworkLayer:
     # configuration parameters
     prob_pkt_loss = 0
-    prob_byte_corr = 0
+    prob_byte_corr = .4
     prob_pkt_reorder = 0
 
     # class variables
@@ -26,12 +26,14 @@ class NetworkLayer:
     def __init__(self, role_S, server_S, port):
         if role_S == 'client':
             print('Network: role is client')
+            print()
             self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.conn.connect((server_S, port))
             self.conn.settimeout(self.socket_timeout)
 
         elif role_S == 'server':
             print('Network: role is server')
+            print()
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.sock.bind(('localhost', port))
             self.sock.listen(1)
@@ -55,17 +57,30 @@ class NetworkLayer:
     def udt_send(self, msg_S):
         # return without sending if the packet is being dropped
         if random.random() < self.prob_pkt_loss:
+            print("DROPPING A PACKET")
+            print()
             return
         # corrupt a packet
         if random.random() < self.prob_byte_corr:
+            print("CORRUPTING A PACKET")
+            print()
+            print("uncorrupt message: ", msg_S)
+            print()
+
             start = random.randint(RDT.Packet.length_S_length,
                                    len(msg_S) - 5)  # make sure we are not corrupting the length field,
             # since that makes life really difficult
             num = random.randint(1, 5)
             repl_S = ''.join(random.sample('XXXXX', num))  # sample length >= num
             msg_S = msg_S[:start] + repl_S + msg_S[start + num:]
+
+            print("corrupt message: ", msg_S)
+            print()
         # reorder packets - either hold a packet back, or if one held back then send both
         if random.random() < self.prob_pkt_reorder or self.reorder_msg_S:
+            print()
+            print("REORDERING")
+            print()
             if self.reorder_msg_S is None:
                 self.reorder_msg_S = msg_S
                 return None
@@ -80,7 +95,7 @@ class NetworkLayer:
             if sent == 0:
                 raise RuntimeError("socket connection broken")
             totalsent = totalsent + sent
-            
+
     ## Receive data from the network and save in internal buffer
     def collect(self):
         #         print (threading.currentThread().getName() + ': Starting')
